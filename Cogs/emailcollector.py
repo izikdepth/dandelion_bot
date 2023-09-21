@@ -85,7 +85,7 @@ class EmailCollectorCog(commands.Cog):
         admin = self.bot.get_user(692834498102165594)  # Replace with dandelion admin's user ID 1108444934110978220
         await admin.send(f'Member: {member.name}, Email: {email}')
         
-        print(f"Data stored successfully: Member: {member.name}, Email: {email}")
+        # print(f"Data stored successfully: Member: {member.name}, Email: {email}")
 
     async def check_email_notifications(self):
         await self.bot.wait_until_ready()
