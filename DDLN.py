@@ -33,5 +33,5 @@ Cogs_list = [
 for Cog in Cogs_list:
     bot.load_extension(f'Cogs.{Cog}')
 
-bot.run(os.getenv('FEDORABOT_TOKEN')) 
+bot.run(os.getenv('Your bot token')) 
 
