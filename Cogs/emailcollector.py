@@ -53,7 +53,7 @@ class EmailCollectorCog(commands.Cog):
                 ddln.commit()
             
             # Notify in a different channel or log the error
-            error_channel = self.bot.get_channel(1066107466510774362)  # Replace with the ID of the channel 1034328239138689045 (#random ) on ddln
+            error_channel = self.bot.get_channel("the id of the channel you want to notify users on")  # Replace with the ID of the channel 1034328239138689045 (#random ) on ddln
             await error_channel.send(f"Cannot send DM to {member.name}. Kindly dm the bot with your email address to stay updated. You can ignore if you do not wish to submit your email.")
         else:
             pass
@@ -82,7 +82,7 @@ class EmailCollectorCog(commands.Cog):
                 print(f"Error changing roles: {e}")
                 return
 
-        admin = self.bot.get_user(692834498102165594)  # Replace with dandelion admin's user ID 1108444934110978220
+        admin = self.bot.get_user("id of the admin that'll be receiving the emails in this case Paul")  # Replace with dandelion admin's user ID 1108444934110978220
         await admin.send(f'Member: {member.name}, Email: {email}')
         
         # print(f"Data stored successfully: Member: {member.name}, Email: {email}")
