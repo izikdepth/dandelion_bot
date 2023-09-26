@@ -50,3 +50,15 @@ set up bot and register the cog to the bot
 """
 def setup(bot):
     bot.add_cog(serverStats(bot))
+
+"""
+NOTES  
+
+1. replace the variable "response" with the api you're going to use to fetch the price of $DDLN coin.
+2. you can copy the same code and reuse it to view & display the market cap of the coin but don't use the code that show's the status "#set bot status"
+3. if you're going to use multiple channels, then name channel_id as 1, 2, 3 etc
+4. you need the on_ready code to allow the  bot to load permissions in the channel first before it's able to edit the channel with price else it'll return None type
+5. you need to ```self."function".start() to start the function immediately bot is activated eg to start the update price function etc
+
+
+"""
