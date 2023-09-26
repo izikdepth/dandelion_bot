@@ -15,7 +15,7 @@ async def on_ready():
 
 @tasks.loop(seconds=5)  # Update every 5 seconds
 async def update_btc_price():
-    channel_id = "1155904828459991120"  # Replace with your channel ID
+    channel_id = "Your channel id here"  # Replace with your channel ID
     channel = bot.get_channel(int(channel_id))  # Get the channel
 
     # Fetch Bitcoin price
