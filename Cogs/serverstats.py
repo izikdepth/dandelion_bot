@@ -10,7 +10,7 @@ class serverStats(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.channel_id = 1156007756898246737
+        self.channel_id = "put your channel id here, check README.md on how to get it"
         self.bot.ready = False
         self.update_btc_price.start() 
 
