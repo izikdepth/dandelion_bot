@@ -1,2 +1,3 @@
 pycord
 sqlite3
+secure-smtplib
