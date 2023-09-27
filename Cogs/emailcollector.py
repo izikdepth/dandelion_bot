@@ -165,14 +165,14 @@ class EmailCollectorCog(commands.Cog):
         # Email content
         msg = MIMEMultipart()
         msg['From'] = email_address
-        msg['To'] = 'investorde620@gmail.com'
+        msg['To'] = 'receiving email address'
         msg['Subject'] = 'DANDELION BOT : NEW EMAIL'
         body = 'New Emails: ' + ', '.join(emails)
         msg.attach(MIMEText(body, 'plain'))
 
         # Send email
         text = msg.as_string()
-        server.sendmail(email_address, 'investorde620@gmail.com', text)
+        server.sendmail(email_address, 'receiving email address', text)
         server.quit()
     
 def setup(bot):
