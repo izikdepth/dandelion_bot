@@ -1,3 +1,5 @@
-pycord
-sqlite3
-secure-smtplib
+py-cord
+asyncio
+dotenv
+yagmail
+requests
