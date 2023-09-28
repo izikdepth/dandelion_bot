@@ -1,20 +1,29 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import sqlite3
 import asyncio
 import time
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 import os
 from dotenv import load_dotenv
 import re
+import csv
+import yagmail
 
 load_dotenv()
 
 # Get email address and password from environment variables
 email_address = os.getenv('EMAIL_ADDRESS')
-email_password = os.getenv('EMAIL_PASSWORD')
+"""
+Note that the password is not your normal google password. he's a link to a video on how to get this password.
+https://youtu.be/nuD6qNAurVM?si=BXpO8w50PcxM6Gn3 (video is in hindi, fairly easy to understand what he's doing in the video, its the only 
+tutorial i could find. i had to use subtitles kek)
+"""
+email_password = os.getenv('SOFTWARE_PASSWORD') 
+
+# Register your email
+yagmail.register(email_address, email_password)
+yag = yagmail.SMTP(email_address, email_password)
+
 # Set database & ddln stands for dandelion so ddln database
 ddln = sqlite3.connect("dandelion.db")
 
@@ -24,10 +33,22 @@ cur = ddln.cursor()
 # Create table for data
 cur.execute("CREATE TABLE IF NOT EXISTS Users(user INTEGER, email TEXT, last_notified INTEGER, help_dms_enabled INTEGER DEFAULT 1)")
 
+# Add email_sent column if it doesn't exist
+cur.execute("PRAGMA table_info(Users)")
+columns = cur.fetchall()
+if not any(column[1] == 'email_sent' for column in columns):
+    cur.execute("ALTER TABLE Users ADD COLUMN email_sent INTEGER DEFAULT 0")
+
+# Commit the changes
+ddln.commit()
+
 class EmailCollectorCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.bot.loop.create_task(self.check_email_notifications())
+        self.send_collected_emails.start()
+
+        # Fetch all emails from the Users table that haven't been sent yet
+        self.rows = cur.execute("SELECT email FROM Users WHERE email_sent = 0").fetchall()
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -54,7 +75,7 @@ class EmailCollectorCog(commands.Cog):
                 ddln.commit()
 
                 # Notify in a different channel or log the error
-                error_channel = self.bot.get_channel("enter the channel id you want to log errors in")  # Replace with the ID of the channel 1034328239138689045 (#random ) on ddln
+                error_channel = self.bot.get_channel("put the channel that'll log errors here")  # Replace with the ID of the channel 1034328239138689045 (#random ) on ddln
                 await error_channel.send(f"Cannot send DM to {member.name}. Kindly dm the bot with your email address to stay updated. You can ignore if you do not wish to submit your email.")
         else:
             pass
@@ -63,7 +84,7 @@ class EmailCollectorCog(commands.Cog):
             msg = await self.bot.wait_for('message', check=check)
             email = msg.content
 
-        # Check if the email address is valid
+            # Check if the email address is valid
             if not email or await self.is_valid_email(email):
                 break
             else:
@@ -75,67 +96,21 @@ class EmailCollectorCog(commands.Cog):
 
         if email:
             try:
-                await member.send("Thank you! Your email has been stored in our database")
+                await member.send("Thank you! Your email has been saved in our database")
             except discord.HTTPException as e:
                 if e.code == 50007:  # Cannot send messages to this user
                     pass
 
-    #         # Insert the user's username and email into the Users table
-            # try:
-            #     cur.execute("INSERT INTO Users (user, email, last_notified) VALUES (?, ?, ?)", (member.id, email, 0))
-            #     ddln.commit()
-            # except sqlite3.Error as e:
-            #     print(f"Database error: {e}")
-            #     return
+            # Insert the user's username and email into the Users table
+            try:
+                cur.execute("INSERT INTO Users (user, email, last_notified, email_sent) VALUES (?, ?, ?, 0)", (member.id, email, 0))
+                ddln.commit()
+            except sqlite3.Error as e:
+                print(f"Database error: {e}")
+                return
 
-            admin = self.bot.get_user("enter admin id")  # Replace with dandelion admin's user ID 1108444934110978220
+            admin = self.bot.get_user("admin user id that'll recieve the emails")  # Replace with dandelion admin's user ID 1108444934110978220
             await admin.send(f'Member: {member.name}, Email: {email}')
-        
-            # print(f"Data stored successfully: Member: {member.name}, Email: {email}")
-    
-    # async def collect_email(self, member):
-    #     def check(m):
-    #         return m.author == member and isinstance(m.channel, discord.DMChannel)
-
-    #     try:
-    #         await member.send('Hey! Welcome to Dandelion! If you wish, you can enter your email to stay updated:')
-    #     except discord.HTTPException as e:
-    #         if e.code == 50007:  # Cannot send messages to this user
-    #             cur.execute("UPDATE Users SET help_dms_enabled = 0 WHERE user = ?", (member.id,))
-    #             ddln.commit()
-
-    #             # Notify in a different channel or log the error
-    #             error_channel = self.bot.get_channel("enter channel id you want to log errors in")  # Replace with the ID of the channel (#random) on ddln
-    #             await error_channel.send(f"Cannot send DM to {member.name}. Kindly DM the bot with your email address to stay updated. You can ignore if you do not wish to submit your email.")
-    #     else:
-    #         while True:
-    #             try:
-    #                 msg = await self.bot.wait_for('message', check=check)
-    #                 email = msg.content
-
-    #                 # Check if the email address is valid
-    #                 if not email or await self.is_valid_email(email):
-    #                     break
-    #                 else:
-    #                     await member.send("The email address you've entered is invalid. Please enter a valid email address.")
-    #             except discord.HTTPException as e:
-    #                 if e.code == 50007:  # Cannot send messages to this user
-    #                     break
-
-    #         if email:
-    #             try:
-    #                 await member.send("Thank you! You're now allowed in the server.")
-    #             except discord.HTTPException as e:
-    #                 if e.code == 50007:  # Cannot send messages to this user
-    #                     pass
-
-    #             admin = self.bot.get_user("enter admin id)  #Replace with dandelion admin's user ID 1108444934110978220
-    #             await admin.send(f'Member: {member.name}, Email: {email}')
-        
-            
-    #             print(f"Data stored successfully: Member: {member.name}, Email: {email}")
-
-
 
     async def check_email_notifications(self):
         await self.bot.wait_until_ready()
@@ -149,31 +124,81 @@ class EmailCollectorCog(commands.Cog):
                         continue
             await asyncio.sleep(1209600)  # Check every two weeks
 
-    #fetch emails from database
-    async def fetch_emails():
-        cur.execute("SELECT email FROM Users")
-        emails = [row[0] for row in cur.fetchall()]
-        return emails
+    async def notify_admin(self, error):
+        admin_id = "admin user id, this should be the dev that' takes care of the bot" # Replace with the actual admin's user ID
+        admin = self.bot.get_user(admin_id)
+        if admin:
+            await admin.send(f"An error occurred: {error}")
+        else:
+            print(f"Admin not found: {admin_id}")
 
-    #send the collected emails to a specified email address
-    async def send_email(emails):
-        # Email server setup
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        server.login(email_address, email_password)
+    @tasks.loop(minutes=1)  # Update every minute
+    async def send_collected_emails(self):
+        print("Debug: send_collected_emails started")  # Debug print to indicate the start of the task
 
-        # Email content
-        msg = MIMEMultipart()
-        msg['From'] = email_address
-        msg['To'] = 'receiving email address'
-        msg['Subject'] = 'DANDELION BOT : NEW EMAIL'
-        body = 'New Emails: ' + ', '.join(emails)
-        msg.attach(MIMEText(body, 'plain'))
+        # Fetch all emails from the Users table that haven't been sent yet
+        rows = cur.execute("SELECT email FROM Users WHERE email_sent = 0").fetchall()
 
-        # Send email
-        text = msg.as_string()
-        server.sendmail(email_address, 'receiving email address', text)
-        server.quit()
-    
+        print("Debug: Fetched rows from the database")  # Debug print to indicate the database fetch
+
+        # If no emails were collected, skip this iteration
+        if not rows:
+            print("Debug: No emails to send, skipping")  # Debug print for the no-email case
+            return
+
+        # Convert the data to a list of email addresses
+        email_list = [row[0] for row in rows]
+        email_list_str = ', '.join(email_list)
+
+        print(f"Debug: Email addresses to send: {email_list_str}")  # Debug print to show the email addresses
+
+        try:
+            # Email server setup
+            print("Debug: Setting up email server")  # Debug print for email server setup
+            yag = yagmail.SMTP(email_address, email_password)
+
+            # Send email with the list of collected emails
+            print("Debug: Sending email")  # Debug print to indicate email sending
+            yag.send(
+                to='receiving-email.gmail.com', #email address that'll be receiving collected mails .email or whatever
+                subject='Discord Bot Email - Collected Emails',
+                contents=f'NEW EMAILS COLLECTED ALERT: {email_list_str}'
+            )
+            print("Debug: Email sent!")
+
+            # Update the email_sent column for the users whose emails have been sent
+            print("Debug: Updating database for sent emails")  # Debug print for database update
+            for email in email_list:
+                cur.execute("UPDATE Users SET email_sent = 1 WHERE email = ?", (email,))
+            ddln.commit()
+
+        except yagmail.SMTPException as e:
+            print(f"SMTP Exception: {e}")
+            # Log the error
+            with open('error_log.txt', 'a') as f:
+                f.write(f"SMTP Exception at {time.ctime()}: {e}\n")
+            # code to notify admin about error
+            await self.notify_admin(e)
+
+        except yagmail.SMTPAuthenticationError as e:
+            print(f"SMTP Authentication Error: {e}")
+            # Log the error
+            with open('error_log.txt', 'a') as f:
+                f.write(f"SMTP Authentication Error at {time.ctime()}: {e}\n")
+            #to notify the admin about the errors that occured
+            await self.notify_admin(e)
+
+        except Exception as e:
+            print(f"Error: {e}")
+            # Log the error
+            with open('error_log.txt', 'a') as f:
+                f.write(f"General Error at {time.ctime()}: {e}\n")
+            #to notify the admin about the errors
+            await self.notify_admin(e)
+
+        print("Debug: send_collected_emails completed")  # Debug print to indicate the end of the task
+
+
+            
 def setup(bot):
     bot.add_cog(EmailCollectorCog(bot))
