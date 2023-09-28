@@ -172,29 +172,30 @@ class EmailCollectorCog(commands.Cog):
                 cur.execute("UPDATE Users SET email_sent = 1 WHERE email = ?", (email,))
             ddln.commit()
 
-        except yagmail.SMTPException as e:
-            print(f"SMTP Exception: {e}")
-            # Log the error
-            with open('error_log.txt', 'a') as f:
-                f.write(f"SMTP Exception at {time.ctime()}: {e}\n")
-            # code to notify admin about error
-            await self.notify_admin(e)
-
-        except yagmail.SMTPAuthenticationError as e:
-            print(f"SMTP Authentication Error: {e}")
-            # Log the error
-            with open('error_log.txt', 'a') as f:
-                f.write(f"SMTP Authentication Error at {time.ctime()}: {e}\n")
-            #to notify the admin about the errors that occured
-            await self.notify_admin(e)
-
         except Exception as e:
             print(f"Error: {e}")
             # Log the error
             with open('error_log.txt', 'a') as f:
                 f.write(f"General Error at {time.ctime()}: {e}\n")
-            #to notify the admin about the errors
+            # Notify the admin about the error
             await self.notify_admin(e)
+
+
+        # except yagmail.SMTPAuthenticationError as e:
+        #     print(f"SMTP Authentication Error: {e}")
+        #     # Log the error
+        #     with open('error_log.txt', 'a') as f:
+        #         f.write(f"SMTP Authentication Error at {time.ctime()}: {e}\n")
+        #     #to notify the admin about the errors that occured
+        #     await self.notify_admin(e)
+
+        # except Exception as e:
+        #     print(f"Error: {e}")
+        #     # Log the error
+        #     with open('error_log.txt', 'a') as f:
+        #         f.write(f"General Error at {time.ctime()}: {e}\n")
+        #     #to notify the admin about the errors
+        #     await self.notify_admin(e)
 
         print("Debug: send_collected_emails completed")  # Debug print to indicate the end of the task
 
