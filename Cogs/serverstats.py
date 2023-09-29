@@ -42,7 +42,9 @@ class serverStats(commands.Cog):
         await channel.edit(name=f"BTC : ${price}")
 
         # Set the bot's status
-        await self.bot.change_presence(activity=discord.Game(name=f"BTC Price: ${price}"))
+        # await self.bot.change_presence(activity=discord.Game(name=f"BTC Price: ${price}"))
+        await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"BTC Price: ${price}"))
+
 
         
 """
