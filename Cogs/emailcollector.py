@@ -132,7 +132,7 @@ class EmailCollectorCog(commands.Cog):
         else:
             print(f"Admin not found: {admin_id}")
 
-    @tasks.loop(minutes=1)  # Update every minute
+    @tasks.loop(hours=24)  # Update every day
     async def send_collected_emails(self):
         print("Debug: send_collected_emails started")  # Debug print to indicate the start of the task
 
