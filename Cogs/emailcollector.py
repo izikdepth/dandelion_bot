@@ -18,7 +18,7 @@ Note that the password is not your normal google password. he's a link to a vide
 https://youtu.be/nuD6qNAurVM?si=BXpO8w50PcxM6Gn3 (video is in hindi, fairly easy to understand what he's doing in the video, its the only 
 tutorial i could find. i had to use subtitles kek)
 """
-email_password = os.getenv('SOFTWARE_PASSWORD') 
+email_password = os.getenv('GMAIL_PASSWORD') 
 
 # Register your email
 yagmail.register(email_address, email_password)
@@ -75,8 +75,8 @@ class EmailCollectorCog(commands.Cog):
                 ddln.commit()
 
                 # Notify in a different channel or log the error
-                error_channel = self.bot.get_channel("put the channel that'll log errors here")  # Replace with the ID of the channel 1034328239138689045 (#random ) on ddln
-                await error_channel.send(f"Cannot send DM to {member.name}. Kindly dm the bot with your email address to stay updated. You can ignore if you do not wish to submit your email.")
+                # error_channel = self.bot.get_channel(1158037278929723493)  # Replace with the ID of the channel that'll alert users here
+                # await error_channel.send(f"Cannot send DM to {member.name}. Kindly dm the bot with your email address to stay updated. You can ignore if you do not wish to submit your email.")
         else:
             pass
 
@@ -89,7 +89,7 @@ class EmailCollectorCog(commands.Cog):
                 break
             else:
                 try:
-                    await member.send("The email address you've entered is invalid. Please enter a valid email address.")
+                    await member.send("The email address you've entered is invalid. Please enter a valid email address:")
                 except discord.HTTPException as e:
                     if e.code == 50007:  # Cannot send messages to this user
                         break
@@ -109,7 +109,7 @@ class EmailCollectorCog(commands.Cog):
                 print(f"Database error: {e}")
                 return
 
-            admin = self.bot.get_user("admin user id that'll recieve the emails")  # Replace with dandelion admin's user ID 1108444934110978220
+            admin = self.bot.get_user(1108444934110978220)  # Replace with dandelion admin's user ID 1108444934110978220
             await admin.send(f'Member: {member.name}, Email: {email}')
 
     async def check_email_notifications(self):
@@ -125,7 +125,7 @@ class EmailCollectorCog(commands.Cog):
             await asyncio.sleep(1209600)  # Check every two weeks
 
     async def notify_admin(self, error):
-        admin_id = "admin user id, this should be the dev that' takes care of the bot" # Replace with the actual admin's user ID
+        admin_id = 692834498102165594 # Replace with the actual admin's user ID that'll receive the error messages
         admin = self.bot.get_user(admin_id)
         if admin:
             await admin.send(f"An error occurred: {error}")
@@ -134,40 +134,40 @@ class EmailCollectorCog(commands.Cog):
 
     @tasks.loop(hours=24)  # Update every day
     async def send_collected_emails(self):
-        print("Debug: send_collected_emails started")  # Debug print to indicate the start of the task
+        # print("Debug: send_collected_emails started")  # Debug print to indicate the start of the task
 
         # Fetch all emails from the Users table that haven't been sent yet
         rows = cur.execute("SELECT email FROM Users WHERE email_sent = 0").fetchall()
 
-        print("Debug: Fetched rows from the database")  # Debug print to indicate the database fetch
+        # print("Debug: Fetched rows from the database")  # Debug print to indicate the database fetch
 
         # If no emails were collected, skip this iteration
         if not rows:
-            print("Debug: No emails to send, skipping")  # Debug print for the no-email case
+            # print("Debug: No emails to send, skipping")  # Debug print for the no-email case
             return
 
         # Convert the data to a list of email addresses
         email_list = [row[0] for row in rows]
         email_list_str = ', '.join(email_list)
 
-        print(f"Debug: Email addresses to send: {email_list_str}")  # Debug print to show the email addresses
+        # print(f"Debug: Email addresses to send: {email_list_str}")  # Debug print to show the email addresses
 
         try:
             # Email server setup
-            print("Debug: Setting up email server")  # Debug print for email server setup
+            # print("Debug: Setting up email server")  # Debug print for email server setup
             yag = yagmail.SMTP(email_address, email_password)
 
             # Send email with the list of collected emails
-            print("Debug: Sending email")  # Debug print to indicate email sending
+            # print("Debug: Sending email")  # Debug print to indicate email sending
             yag.send(
-                to='receiving-email.gmail.com', #email address that'll be receiving collected mails .email or whatever
+                to='community@dandelionnet.com', #email address that'll be receiving collected mails .email or whatever
                 subject='Discord Bot Email - Collected Emails',
                 contents=f'NEW EMAILS COLLECTED ALERT: {email_list_str}'
             )
-            print("Debug: Email sent!")
+            # print("Debug: Email sent!")
 
             # Update the email_sent column for the users whose emails have been sent
-            print("Debug: Updating database for sent emails")  # Debug print for database update
+            # print("Debug: Updating database for sent emails")  # Debug print for database update
             for email in email_list:
                 cur.execute("UPDATE Users SET email_sent = 1 WHERE email = ?", (email,))
             ddln.commit()
@@ -197,7 +197,7 @@ class EmailCollectorCog(commands.Cog):
         #     #to notify the admin about the errors
         #     await self.notify_admin(e)
 
-        print("Debug: send_collected_emails completed")  # Debug print to indicate the end of the task
+        # print("Debug: send_collected_emails completed")  # Debug print to indicate the end of the task
 
 
             
