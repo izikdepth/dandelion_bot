@@ -1,5 +1,5 @@
 py-cord
 asyncio
-dotenv
+python-dotenv
 yagmail
 requests
