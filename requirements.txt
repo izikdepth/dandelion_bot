@@ -3,3 +3,4 @@ asyncio
 python-dotenv
 yagmail
 requests
+keyrings.alt
