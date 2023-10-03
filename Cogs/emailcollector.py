@@ -19,12 +19,23 @@ Note that the password is not your normal google password. he's a link to a vide
 https://youtu.be/nuD6qNAurVM?si=BXpO8w50PcxM6Gn3 (video is in hindi, fairly easy to understand what he's doing in the video, its the only 
 tutorial i could find. i had to use subtitles kek)
 """
-# email_password = os.getenv('GMAIL_PASSWORD') 
-# Set the password
+email_password = os.getenv('GMAIL_PASSWORD') 
+
+# Create an instance of EncryptedKeyring
 keyring = EncryptedKeyring()
-# keyring.set_password('system', 'username', 'password')
-keyring.set_password('system', 'username', 'enter_password')
-email_password = keyring.get_password('system', 'username')
+
+# Set the password
+service_id = 'google'
+user_id = email_address
+password =  email_password
+
+# Ensure the password is a string ie convert to string if password is not a string
+if isinstance(password, bytes):
+    password = password.decode('utf-8')
+
+
+keyring.set_password(service_id, user_id, password)
+email_password = keyring.get_password(service_id, user_id)
 
 # Register your email
 yagmail.register(email_address, email_password)
