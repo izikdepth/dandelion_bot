@@ -19,7 +19,7 @@ Note that the password is not your normal google password. he's a link to a vide
 https://youtu.be/nuD6qNAurVM?si=BXpO8w50PcxM6Gn3 (video is in hindi, fairly easy to understand what he's doing in the video, its the only 
 tutorial i could find. i had to use subtitles kek)
 """
-email_password = os.getenv('GMAIL_PASSWORD') 
+email_password = os.getenv('EMAIL_PASSWORD') 
 
 # Create an instance of EncryptedKeyring
 keyring = EncryptedKeyring()
