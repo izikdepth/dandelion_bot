@@ -167,6 +167,9 @@ class EmailCollectorCog(commands.Cog):
         email_list = [row[0] for row in rows]
         email_list_str = ', '.join(email_list)
 
+        receiving_emails = ["community@dandelionnet.com","irene@dandelionnet.io","kassiedwarika@gmail.com",
+                            "jason.xu@dandelionnet.com", "paul.chafe@dandelionnet.com"]
+
         # print(f"Debug: Email addresses to send: {email_list_str}")  # Debug print to show the email addresses
 
         try:
@@ -177,8 +180,8 @@ class EmailCollectorCog(commands.Cog):
             # Send email with the list of collected emails
             # print("Debug: Sending email")  # Debug print to indicate email sending
             yag.send(
-                to='community@dandelionnet.com', #email address that'll be receiving collected mails .email or whatever
-                subject='Discord Bot Email - Collected Emails',
+                to=receiving_emails, #email addresses that'll be receiving collected mails .email or whatever
+                subject='Collected Emails From Dandelion Bot',
                 contents=f'NEW EMAILS COLLECTED ALERT: {email_list_str}'
             )
             # print("Debug: Email sent!")
