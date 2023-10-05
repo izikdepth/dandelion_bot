@@ -28,6 +28,7 @@ async def on_ready():
 Cogs_list = [
     "faq", 
     "emailcollector",
+    "serverstats",
 ]
 
 for Cog in Cogs_list:
