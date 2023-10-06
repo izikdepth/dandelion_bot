@@ -11,11 +11,6 @@ intents = discord.Intents.default()
 intents.members = True
 
 
-##setting up logging 
-# logger = logging.getLogger('discord')
-# handler = logging.FileHandler(filename='DDLN_logs.log', encoding='utf-8', mode='w')
-# handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-# logger.addHandler(handler)
 
 #set bot command prefix and initial bot
 bot = commands.Bot(command_prefix="/", intents=intents)
@@ -34,5 +29,5 @@ Cogs_list = [
 for Cog in Cogs_list:
     bot.load_extension(f'Cogs.{Cog}')
 
-bot.run(os.getenv('Your bot token')) 
+bot.run(os.getenv('DDLN_BOT')) 
 
