@@ -646,6 +646,12 @@ class Faq(commands.Cog):
                    "[more](https://discord.com/channels/1027371612875542588/1108085988384841808/1108086095528333383)")
         await ctx.respond(message)
         
+    @discord.slash_command(description="general faq command")
+    async def faq(self, ctx):
+        message = (
+            "when you type '/' all FAQ questions will be visible to you. select which one you're interested in and press enter or send"
+        )
+    
 
     
     
