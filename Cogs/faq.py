@@ -651,6 +651,7 @@ class Faq(commands.Cog):
         message = (
             "when you type '/' all FAQ questions will be visible to you. select which one you're interested in and press enter or send"
         )
+        await ctx.respond(message)
     
 
     
