@@ -4,15 +4,18 @@ import requests
 
 intents = discord.Intents(guilds=True)
 client = discord.Client(intents=intents)
+intents.members = True
  
 
 class serverStats(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.channel_id = 1158037626641727558 # price channel
+        self.channel_id =  #price feed channel
+        self.member_countChannel = #members count channel
         self.bot.ready = False
         self.update_btc_price.start() 
+        self.update_memberCount.start()
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -44,6 +47,25 @@ class serverStats(commands.Cog):
         # Set the bot's status
         # await self.bot.change_presence(activity=discord.Game(name=f"BTC Price: ${price}"))
         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"BTC Price: ${price}"))
+        
+    @tasks.loop(seconds=30) # Update every 30 seconds
+    async def update_memberCount(self):
+        if not self.bot.ready or self.member_countChannel is None:
+            return
+
+        channel = self.bot.get_channel(int(self.member_countChannel))
+
+        if channel is None:
+            print(f'Could not find channel with ID {self.member_countChannel}')
+            return
+
+        guild = self.bot.guilds[0]
+        member_count = guild.member_count
+
+        await channel.edit(name=f"Members: {member_count}")
+
+
+
 
 
         
@@ -52,7 +74,8 @@ set up bot and register the cog to the bot
 """
 def setup(bot):
     bot.add_cog(serverStats(bot))
-
+    
+    
 """
 NOTES  
 
