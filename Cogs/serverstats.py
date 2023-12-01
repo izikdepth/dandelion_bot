@@ -48,8 +48,24 @@ class serverStats(commands.Cog):
         # await self.bot.change_presence(activity=discord.Game(name=f"BTC Price: ${price}"))
         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"BTC Price: ${price}"))
         
-    @tasks.loop(seconds=30) # Update every 30 seconds
-    async def update_memberCount(self):
+    # @tasks.loop(seconds=30) # Update every 30 seconds
+    # async def update_memberCount(self):
+    #     if not self.bot.ready or self.member_countChannel is None:
+    #         return
+
+    #     channel = self.bot.get_channel(int(self.member_countChannel))
+
+    #     if channel is None:
+    #         print(f'Could not find channel with ID {self.member_countChannel}')
+    #         return
+
+    #     guild = self.bot.guilds[0]
+    #     member_count = guild.member_count
+
+    #     await channel.edit(name=f"Members: {member_count}")
+
+     @tasks.loop(seconds=30) # Update every 30 seconds
+     async def update_memberCount(self):
         if not self.bot.ready or self.member_countChannel is None:
             return
 
@@ -60,9 +76,14 @@ class serverStats(commands.Cog):
             return
 
         guild = self.bot.guilds[0]
-        member_count = guild.member_count
+        verified_role = guild.get_role("enter verified role id here")#verified role id, you can get this by right clicking the role on discord and copy
+        verified_members = verified_role.members
+        verified_member_count = len(verified_members)
 
-        await channel.edit(name=f"Members: {member_count}")
+        await channel.edit(name=f"Verified verified: {verified_member_count}")
+        
+"""verified members count function checks the number of verified members in the server and displays it over the channel"""
+
 
 
 
