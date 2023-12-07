@@ -167,8 +167,7 @@ class EmailCollectorCog(commands.Cog):
         email_list = [row[0] for row in rows]
         email_list_str = ', '.join(email_list)
 
-        receiving_emails = ["community@dandelionnet.com","irene@dandelionnet.io","kassiedwarika@gmail.com",
-                            "jason.xu@dandelionnet.com", "paul.chafe@dandelionnet.com"]
+        receiving_emails = ["enter the list of emails to send messages to"] #enter emails to send mails to here
 
         # print(f"Debug: Email addresses to send: {email_list_str}")  # Debug print to show the email addresses
 
